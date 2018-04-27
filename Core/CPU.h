@@ -78,10 +78,8 @@ private:
 	template<Mode m> void INC() { G; T; upd_nz(wr(a, ++p)); }
 #undef G
 #define CHG(CHG,REG) void CHG##REG(){upd_nz(--REG); T; }
-	CHG(dec,X)
-	CHG(dec,Y)
-	CHG(inc,X)
-	CHG(inc,Y)
+	CHG(dec,X)CHG(dec,Y)CHG(inc,X)CHG(inc,Y)
+#undef CHG
 	void ASL_A() { flag.set(C,A & 0x80); upd_nz(A <<= 1); T; }
 	void LSR_A() { flag.set(C,A & 0x01); upd_nz(A >>= 1); T; }
 	void ROL_A() { u8 c = flag.get(C); flag.set(C, A & 0x80); upd_nz(A = ((A << 1) | c)); T; }
@@ -93,10 +91,9 @@ private:
 	void PHP() { T; push(flag.get() | (1 << 4)); }
 	void PLA() { T; T; A = pop(); upd_nz(A); }
 	void PHA() { T; push(A); }
+#undef TR
 #define ST(REG) template<Mode m> void st##REG(){wr((this->*m)(),REG);}
-	ST(A)
-	ST(X)
-	ST(Y)
+	ST(A)ST(X)ST(Y)
 #undef ST
 	template<FLAG f, bool v> void br() { s8 j = rd(imm()); if (flag.get(f) == v) { T; PC += j; } }
 	void JMP_IND() { u16 i = rd16(imm16()); PC = rd16_d(i, (i & 0xFF00) | ((i + 1) % 0x100)); }
